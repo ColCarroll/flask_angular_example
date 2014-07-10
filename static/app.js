@@ -9,20 +9,33 @@ function ModelCtrl($scope, $http) {
     petalWidth : 1.2
   };
 
-  $scope.probs = $http.get(this.url()).success(function(data){
-          return data;
-      });
+  $scope.getGraph = function() {
+
+    return "hello";
+  };
+
+  $scope.url = function() {
+    return("/api/predict?" +
+      "sepal_length=" + this.features.sepalLength.toFixed(2) + "&" +
+      "sepal_width=" + this.features.sepalWidth.toFixed(2) + "&" +
+      "petal_length=" + this.features.petalLength.toFixed(2) + "&" +
+      "petal_width=" + this.features.petalWidth.toFixed(2));
+  }
+
+  $scope.probs = {};
+
+  $scope.callIt = function() {
+    $http({
+    method: 'GET',
+    url: $scope.url()
+    }).success(function(data){
+        $scope.probs = data;
+    });
+  };
 
   $scope.getProbs = function(){
       return $scope.probs;
   };
 
 
-  $scope.url = function() {
-      return("/_model/" +
-          this.features.sepalLength.toFixed(2) + "/" +
-          this.features.sepalWidth.toFixed(2) + "/" +
-          this.features.petalLength.toFixed(2) + "/" +
-          this.features.petalWidth.toFixed(2));
-  }
 }
