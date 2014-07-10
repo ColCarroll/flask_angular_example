@@ -20,7 +20,7 @@ function ModelCtrl($scope, $http) {
       "sepal_width=" + this.features.sepalWidth.toFixed(2) + "&" +
       "petal_length=" + this.features.petalLength.toFixed(2) + "&" +
       "petal_width=" + this.features.petalWidth.toFixed(2));
-  }
+  };
 
   $scope.probs = {};
 
@@ -36,6 +36,8 @@ function ModelCtrl($scope, $http) {
   $scope.getProbs = function(){
       return $scope.probs;
   };
+
+  $scope.callIt();
 
 
 }
