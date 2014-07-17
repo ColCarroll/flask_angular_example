@@ -6,10 +6,10 @@ var flaskAngularApp = angular.module("flaskAngularApp", []);
 
 flaskAngularApp.controller("ModelCtrl", function ModelCtrl($scope, $http) {
     $scope.features = {
-        sepalLength : 4.1,
-        sepalWidth : 5.0,
-        petalLength : 2.5,
-        petalWidth : 3
+        sepalLength : 5.0,
+        sepalWidth : 2.8,
+        petalLength : 2.4,
+        petalWidth : 1.6
     };
 
     $scope.url = function() {
@@ -44,13 +44,10 @@ flaskAngularApp.directive("irisBars", function(){
 
     // constants
     var margin = 20,
-        width = 450 - margin,
-        height = 300,
-        yScale = d3.scale.linear()
-            .domain([0, 1])
-            .range([0, height]),
-        barPadding = 3,
-        duration = 500;
+        barPadding = 2,
+        ease='linear',
+        duration = 300,
+        height = 300;
 
     return {
         restrict: "E",
@@ -62,8 +59,15 @@ flaskAngularApp.directive("irisBars", function(){
             // set up initial svg object
             var svg = d3.select(element[0])
                 .append("svg")
-                .style("width", width)
-                .attr("height", height + margin + 100);
+                .style("width", "100%"),
+                width=svg[0][0].clientWidth - margin,
+                yScale = d3.scale.linear()
+                    .domain([0, 1])
+                    .range([0, height]);
+            svg.attr('viewBox','0 0 '+(Math.max(width,height) + margin)+' '+(Math.max(width,height) + margin))
+                .attr('preserveAspectRatio','xMinYMin')
+                .append("g")
+                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
             scope.$watch("data", function (data) {
                 scope.render(data);
@@ -83,6 +87,7 @@ flaskAngularApp.directive("irisBars", function(){
                 bars
                     .transition()
                     .duration(duration)
+                    .ease(ease)
                     .attr("height", function(d){return yScale(d.prob)})
                     .attr("y", function(d) {return height - Math.round(margin / 2) - yScale(d.prob)});
 
@@ -90,6 +95,7 @@ flaskAngularApp.directive("irisBars", function(){
                     .text(function(d) {return (100 * d.prob).toFixed(1) + "%";})
                     .transition()
                     .duration(duration)
+                    .ease(ease)
                     .attr("y", function(d) {return height - Math.round(margin / 2) - yScale(d.prob)});
 
                 bars
@@ -101,6 +107,7 @@ flaskAngularApp.directive("irisBars", function(){
                     .data(newData)
                     .transition()
                     .duration(duration)
+                    .ease(ease)
                     .attr("height", function(d){return yScale(d.prob)})
                     .attr("y", function(d) {return height - Math.round(margin / 2) - yScale(d.prob)});
 
@@ -113,8 +120,6 @@ flaskAngularApp.directive("irisBars", function(){
                     .attr("text-anchor", "middle")
                     .text(function(d) {return (100 * d.prob).toFixed(1) + "%";})
                     .attr("fill", "white")
-                    .transition()
-                    .duration(duration)
                     .attr("y", function(d) {return height - Math.round(margin / 2) - yScale(d.prob)});
 
                 text

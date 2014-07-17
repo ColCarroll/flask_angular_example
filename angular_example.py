@@ -17,7 +17,7 @@ MODEL, LABELS = get_model()
 
 @app.route('/')
 def index():
-    return make_response(open(os.path.join(DIR, 'templates/index.html')).read())
+    return make_response(open(os.path.join(DIR, 'index.html')).read())
 
 
 @app.route('/api/predict')
