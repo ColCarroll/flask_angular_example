@@ -2,6 +2,12 @@
  * Created by colinc on 6/25/14.
  */
 
+String.prototype.toCamel = function() {
+    return this.toLowerCase().replace(/([ -]+)([a-zA-Z0-9])/g, function (a, b, c) {
+        return c.toUpperCase();
+    });
+};
+
 var flaskAngularApp = angular.module("flaskAngularApp", []);
 
 flaskAngularApp.controller("ModelCtrl", function ModelCtrl($scope, $http) {
@@ -14,10 +20,10 @@ flaskAngularApp.controller("ModelCtrl", function ModelCtrl($scope, $http) {
 
     $scope.url = function() {
         return("/api/predict?" +
-            "sepal_length=" + this.features.sepalLength.toFixed(1) + "&" +
-            "sepal_width=" + this.features.sepalWidth.toFixed(1) + "&" +
-            "petal_length=" + this.features.petalLength.toFixed(1) + "&" +
-            "petal_width=" + this.features.petalWidth.toFixed(1));
+            "sepal_length=" + this.features.sepalLength.toFixed(2) + "&" +
+            "sepal_width=" + this.features.sepalWidth.toFixed(2) + "&" +
+            "petal_length=" + this.features.petalLength.toFixed(2) + "&" +
+            "petal_width=" + this.features.petalWidth.toFixed(2));
     };
 
     $scope.probs = {};
@@ -58,8 +64,8 @@ flaskAngularApp.directive("irisBars", function(){
 
             // set up initial svg object
             var svg = d3.select(element[0])
-                .append("svg")
-                .style("width", "100%"),
+                    .append("svg")
+                    .style("width", "100%"),
                 width=svg[0][0].clientWidth - margin,
                 yScale = d3.scale.linear()
                     .domain([0, 1])
@@ -133,6 +139,150 @@ flaskAngularApp.directive("irisBars", function(){
                     .text(function(d) { return d.label;});
 
             };
+
+
+        }
+    }
+});
+
+flaskAngularApp.directive("irisScatter", function(){
+
+    // constants
+    var margin = {top: 20, right: 20, bottom: 30, left: 40};
+
+    return {
+        restrict: "EA",
+        scope: {
+            features: '=',
+            xval: '@',
+            yval: '@'
+        },
+        link: function (scope, element, attrs) {
+
+            var svg = d3.select(element[0]).append("svg")
+                .style("width", "100%")
+                .style("height", "100%");
+
+            var width=svg[0][0].clientWidth - margin.left - margin.right,
+                height=svg[0][0].clientHeight - margin.top - margin.bottom,
+                xValue = function(d) { return d[scope.xval];}, // data -> value
+                xScale = d3.scale.linear().range([0, width]), // value -> display
+                xMap = function(d) { return xScale(xValue(d));}, // data -> display
+                xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+
+            var yValue = function(d) { return d[scope.yval];}, // data -> value
+                yScale = d3.scale.linear().range([height, 0]), // value -> display
+                yMap = function(d) { return yScale(yValue(d));}, // data -> display
+                yAxis = d3.svg.axis().scale(yScale).orient("right");
+
+            var cValue = function(d) { return d.Species;},
+                color = d3.scale.category10();
+
+            svg.attr("height", height + margin.top + margin.bottom)
+              .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            // load data
+            d3.csv('/static/iris.csv', function(error, data) {
+
+              data.forEach(function(d) {
+                d[scope.xval] = +d[scope.xval];
+                d[scope.yval] = +d[scope.yval];
+              });
+
+              scope.features[scope.xval] = +scope.features[scope.xval.toCamel()];
+              scope.features[scope.yval] = +scope.features[scope.yval.toCamel()];
+
+              // don't want dots overlapping axis, so add in buffer to data domain
+              xScale.domain([d3.min(data, xValue)-1, d3.max(data, xValue)+1]);
+              yScale.domain([d3.min(data, yValue)-1, d3.max(data, yValue)+1]);
+
+              // x-axis
+              svg.append("g")
+                  .attr("class", "x axis")
+                  .attr("transform", "translate(0," + height + ")")
+                  .call(xAxis)
+                .append("text")
+                  .attr("class", "label")
+                  .attr("x", width - 5)
+                  .attr("y", -2)
+                  .style("text-anchor", "end")
+                  .text(scope.xval);
+
+              // y-axis
+              svg.append("g")
+                  .attr("class", "y axis")
+                  .attr("transform", "translate(" + width + ", 0)")
+                  .call(yAxis)
+                .append("text")
+                  .attr("class", "label")
+                  .attr("transform", "rotate(-90)")
+                  .attr("y", 6)
+                  .attr("dy", "-1.2em")
+                  .style("text-anchor", "end")
+                  .text(scope.yval);
+
+              // draw dots
+              svg.selectAll(".dot")
+                  .data(data)
+                .enter().append("circle")
+                  .attr("class", "dot")
+                  .attr("r", 2.5)
+                  .attr("cx", xMap)
+                  .attr("cy", yMap)
+                  .style("opacity", 0.6)
+                  .style("fill", function(d) { return color(cValue(d));});
+
+                svg.selectAll(".position")
+                    .data([scope.features])
+                    .enter().append("circle")
+                    .attr("class", "position")
+                    .attr("r", 2.5)
+                    .attr("cx", xMap)
+                    .attr("cy", yMap)
+                    .style("fill", "black");
+
+
+              // draw legend
+              var legend = svg.selectAll(".legend")
+                  .data(color.domain())
+                .enter().append("g")
+                  .attr("class", "legend")
+                  .attr("transform", function(d, i) { return "translate(0," + i * 13 + ")"; });
+
+              legend.append("rect")
+                  .attr("x", 10)
+                  .attr("width", 10)
+                  .attr("height", 10)
+                  .style("fill", color);
+
+              legend.append("text")
+                  .attr("x", 24)
+                  .attr("y", 5)
+                  .attr("dy", ".25em")
+                  .style("text-anchor", "begin")
+                  .text(function(d) { return d;})
+            });
+
+            scope.$watch('features', function (newData, oldData) {
+                scope.render(newData);
+            }, true);
+
+            scope.render = function(newData){
+                if (!newData) return;
+                newData[scope.xval] = +newData[scope.xval.toCamel()];
+                newData[scope.yval] = +newData[scope.yval.toCamel()];
+
+                svg.selectAll(".position")
+                    .data([newData])
+                    .attr("class", "position")
+                    .attr("r", 2.5)
+                    .attr("cx", xMap)
+                    .attr("cy", yMap)
+                    .style("fill", "black");
+
+            };
+
 
 
         }

@@ -1,7 +1,7 @@
 import os
 from sklearn import datasets
 from sklearn.ensemble import RandomForestClassifier
-from flask import Flask, make_response, jsonify, request
+from flask import Flask, make_response, jsonify, request, Response
 
 DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__)
@@ -21,7 +21,7 @@ def index():
 
 
 @app.route('/api/predict')
-def echo():
+def predict():
     a = request.args.get('sepal_length')
     b = request.args.get('sepal_width')
     c = request.args.get('petal_length')
@@ -29,7 +29,6 @@ def echo():
     probs = MODEL.predict_proba(map(float, [a, b, c, d]))[0]
     val = {"data": [{"label": label, "prob": prob} for label, prob in zip(LABELS, probs)]}
     return jsonify(val)
-
 
 if __name__ == '__main__':
     app.run(debug=True)
