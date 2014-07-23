@@ -22,13 +22,17 @@ def index():
 
 @app.route('/api/predict')
 def predict():
-    a = request.args.get('sepal_length')
-    b = request.args.get('sepal_width')
-    c = request.args.get('petal_length')
-    d = request.args.get('petal_width')
-    probs = MODEL.predict_proba(map(float, [a, b, c, d]))[0]
+    a = request.args.get('sepal_length', 0)
+    b = request.args.get('sepal_width', 0)
+    c = request.args.get('petal_length', 0)
+    d = request.args.get('petal_width', 0)
+    try:
+        probs = MODEL.predict_proba(map(float, [a, b, c, d]))[0]
+    except ValueError:
+        probs = (1. / len(LABELS) for _ in LABELS)
     val = {"data": [{"label": label, "prob": prob} for label, prob in zip(LABELS, probs)]}
     return jsonify(val)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
