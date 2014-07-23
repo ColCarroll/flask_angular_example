@@ -49,11 +49,11 @@ flaskAngularApp.controller("ModelCtrl", function ModelCtrl($scope, $http) {
 flaskAngularApp.directive("irisBars", function(){
 
     // constants
-    var margin = 20,
+    var margin = {top: 20, right: 20, bottom: 30, left: 40},
         barPadding = 2,
         ease='linear',
-        duration = 300,
-        height = 300;
+        height = 300 - margin.top - margin.bottom;
+        duration = 300;
 
     return {
         restrict: "E",
@@ -65,14 +65,13 @@ flaskAngularApp.directive("irisBars", function(){
             // set up initial svg object
             var svg = d3.select(element[0])
                     .append("svg")
-                    .style("width", "100%"),
-                width=svg[0][0].clientWidth - margin,
+                    .style("width", "100%")
+                    .style("height", height),
+                width=svg[0][0].clientWidth - margin.left - margin.right,
                 yScale = d3.scale.linear()
                     .domain([0, 1])
                     .range([0, height]);
-            svg.attr('viewBox','0 0 '+(Math.max(width,height) + margin)+' '+(Math.max(width,height) + margin))
-                .attr('preserveAspectRatio','xMinYMin')
-                .append("g")
+            svg.append("g")
                 .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
             scope.$watch("data", function (data) {
@@ -95,14 +94,14 @@ flaskAngularApp.directive("irisBars", function(){
                     .duration(duration)
                     .ease(ease)
                     .attr("height", function(d){return yScale(d.prob)})
-                    .attr("y", function(d) {return height - Math.round(margin / 2) - yScale(d.prob)});
+                    .attr("y", function(d) {return height - Math.round((margin.top + margin.bottom) / 2) - yScale(d.prob)});
 
                 text
                     .text(function(d) {return (100 * d.prob).toFixed(1) + "%";})
                     .transition()
                     .duration(duration)
                     .ease(ease)
-                    .attr("y", function(d) {return height - Math.round(margin / 2) - yScale(d.prob)});
+                    .attr("y", function(d) {return height - Math.round((margin.top + margin.bottom) / 2) - yScale(d.prob)});
 
                 bars
                     .enter()
@@ -115,7 +114,7 @@ flaskAngularApp.directive("irisBars", function(){
                     .duration(duration)
                     .ease(ease)
                     .attr("height", function(d){return yScale(d.prob)})
-                    .attr("y", function(d) {return height - Math.round(margin / 2) - yScale(d.prob)});
+                    .attr("y", function(d) {return height - Math.round((margin.top + margin.bottom) / 2) - yScale(d.prob)});
 
                 text
                     .enter()
@@ -126,7 +125,7 @@ flaskAngularApp.directive("irisBars", function(){
                     .attr("text-anchor", "middle")
                     .text(function(d) {return (100 * d.prob).toFixed(1) + "%";})
                     .attr("fill", "white")
-                    .attr("y", function(d) {return height - Math.round(margin / 2) - yScale(d.prob)});
+                    .attr("y", function(d) {return height - Math.round((margin.top - margin.bottom) / 2) - yScale(d.prob)});
 
                 text
                     .enter()
