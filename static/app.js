@@ -74,6 +74,9 @@ flaskAngularApp.directive("irisBars", function(){
             svg.append("g")
                 .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
+            var cValue = function(d) { return d.label;},
+                color = d3.scale.category10();
+
             scope.$watch("data", function (data) {
                 scope.render(data);
             });
@@ -107,7 +110,7 @@ flaskAngularApp.directive("irisBars", function(){
                     .enter()
                     .append('rect')
                     .attr("width", barWidth)
-                    .attr("fill", "steelblue")
+                    .attr("fill", function(d) { return color(cValue(d));})
                     .attr("x", function(d, i) { return i * (barWidth + barPadding) })
                     .data(newData)
                     .transition()
