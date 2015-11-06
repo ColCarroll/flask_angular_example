@@ -1,10 +1,19 @@
 flask_angular_example
 =====================
 
-A minimal example of an interactive scikit-learn model, using angularJS and d3js.  To run, install (via `pip` or your other favorite)
-* numpy
-* scipy
-* sklearn
-* flask
+A minimal example of an interactive scikit-learn model, using angularJS and d3js.  To in a 
+virtual environment:
 
-and run `python angular_example.py`, then go to localhost:5000.
+```
+	$ virtualenv venv
+	New python executable in venv/bin/python
+	Installing setuptools, pip, wheel...done.
+	$ source venv/bin/activate
+	(venv)$ pip install -r requirements.txt 
+	...
+	(venv)$ python angular_example.py 
+	 * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+```
+then go to [localhost:5000](http://localhost:5000/).  
+
+Just want to see it running?  Go over to [here](http://angulardemo.colindcarroll.com/).

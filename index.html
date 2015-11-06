@@ -3,8 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title></title>
-    <meta name="description" content="">
+    <title>Sample Flask Angular App</title>
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <style>
@@ -24,21 +23,6 @@
 <body>
 
 <a href="https://github.com/ColCarroll/flask_angular_example"><img style="position: absolute; top: 0; right: 0; border: 0; z-index: 1050;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
-
-<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">Angular Models</a>
-        </div>
-    </div>
-</div>
-
 <div class="jumbotron">
     <div class="container">
         <h1>Interactive Models with Flask and AngularJS</h1>
@@ -54,57 +38,49 @@
 
 <div class="container" ng-controller="ModelCtrl">
     <div class="row">
-        <div class="col-sm-2">
+        <div class="col-md-2">
             <h2>Features</h2>
             <form class="form-horizontal">
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">Sepal Length:</label>
-                    <div class="col-sm-8">
-                        <input class="form-control" type="number" min="4" max="8" step="0.05" ng-model="features.sepalLength" ng-change="callIt()">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">Sepal Width:</label>
-                    <div class="col-sm-8">
-                        <input class="form-control" type="number" min="1.5" max="5" step="0.05" ng-model="features.sepalWidth" ng-change="callIt()">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">Petal Length:</label>
-                    <div class="col-sm-8">
-                        <input class="form-control" type="number" min="0.5" max="7.5" step="0.05" ng-model="features.petalLength" ng-change="callIt()">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">Petal Width:</label>
-                    <div class="col-sm-8">
-                        <input class="form-control" type="number" min="0" max="3" step="0.05" ng-model="features.petalWidth" ng-change="callIt()">
+                <div class="form-group" ng-repeat='dimension in dimensions'>
+                    <label class="col-md-4 control-label">{{dimension}}:</label>
+                    <div class="col-md-8">
+                        <input class="form-control" type="number" 
+                            min={{valMin(dimension)}} max={{valMax(dimension)}} 
+                            step="0.05" ng-model="features[dimension]" 
+                            ng-change="updateProbs()"/>
                     </div>
                 </div>
             </form>
         </div>
-        <div class="col-sm-10">
+        <div class="col-md-10">
             <h2>Class Probabilities</h2>
-            <div class="col-sm-6">
-                <iris-bars data="probs"></iris-bars>
+            <div class="col-md-6">
+                <iris-bars data="probs" id='barChart'></iris-bars>
             </div>
-            <div class="col-sm-5">
-                <iris-scatter yval="Sepal Length" xval="Sepal Width" features="features"></iris-scatter>
-                <iris-scatter yval="Petal Length" xval="Petal Width" features="features"></iris-scatter>
+            <div class="col-md-6">
+                <iris-scatter domain="domain" yval='Sepal Length' 
+                              xval='Sepal Width' features='features' id='sepalChart' legend=true></iris-scatter>
+                <iris-scatter domain="domain" yval='Petal Length' 
+                              xval='Petal Width' features='features' id='petalChart' legend=false></iris-scatter>
             </div>
         </div>
     </div>
-
-    <hr>
-
 </div>
 
-<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.16/angular.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.16/angular-route.js"></script>
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="static/barChart.js"></script>
+<script src="static/scatterPlot.js"></script>
 <script src="static/app.js"></script>
-<script type='text/javascript'>(function(g,u,e){g.createElement("img").src = "//eugo.ws/b9297aa7bf949456ec30.png" + (g[u] && ["?ref", encodeURIComponent(g[u])].join("="));}(document,'referrer'));</script>
+<!--script type="text/javascript">
+  document._EUGO = 'b9297aa7bf949456ec30';
+    document.head.appendChild(function() {
+        var s = document.createElement('script');
+        s.src = 'https://eugo.ws/eugo.js';
+        s.async = 1;
+        return s;
+      }());
+</script-->
 </body>
 </html>
