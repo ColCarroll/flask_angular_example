@@ -25,10 +25,10 @@ var flaskAngularApp = angular.module("flaskAngularApp", [])
 
         $scope.url = function() {
             return("/api/predict?" +
-                "sepal_length=" + this.features['Sepal Length'] + "&" +
-                "sepal_width=" + this.features['Sepal Width'] + "&" +
-                "petal_length=" + this.features['Petal Length'] + "&" +
-                "petal_width=" + this.features['Petal Width']);
+                "sepalLength=" + this.features['Sepal Length'] + "&" +
+                "sepalWidth=" + this.features['Sepal Width'] + "&" +
+                "petalLength=" + this.features['Petal Length'] + "&" +
+                "petalWidth=" + this.features['Petal Width']);
         };
 
         $scope.updateProbs = function() {
